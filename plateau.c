@@ -99,6 +99,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 		
 	}
 	
+	// Gestion des erreurs
 	else 
 	{
 		
@@ -109,61 +110,93 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 	
 }
 
-// Fonction initialisant les trous
+// Fonction initialisant la position des trous sur le plateau
 void init_Trou (SDL_Surface *ecran, Trou *trou) 
 {
-	int x, y, couleur, i=0;
-	FILE * f;
-	int k;
-	for(k=0; k <121; k++) {
-	trou->tab[k] = (Pion *)malloc(sizeof(Pion));
+	
+	int x;					// Position x (horizontale) du trou
+	int y; 					// Position y (verticale) du trou
+	int couleur; 
+	
+	int k;					// Compteur de boucle
+	int i;					// Compteur de boucle
+	
+	i=0;
+	
+	FILE *fichier_plateau;
+
+	for (k=0; k <121; k++) 
+	{
+		
+		trou->tab[k] = (Pion*) malloc(sizeof(Pion));
+		
 	}
-	if(f = fopen("plateau.txt", "r")) {
-		while(fscanf(f,"%d %d %d", &couleur, &x, &y) != EOF) {
+	
+	// Ouverture du fichier contenant les positions des trous
+	if (fichier_plateau = fopen("plateau.txt", "r")) 
+	{
+		
+		// Lecture du fichier contenant les positions des trous
+		while(fscanf(f,"%d %d %d", &couleur, &x, &y) != EOF) 
+		{
+			
 			trou->tab[i]->position_pion.x = x-100;
 			trou->tab[i]->position_pion.y = y-100;
 			trou->tab[i]->surface= IMG_Load("Image/hole.png");
 			SDL_BlitSurface(trou->tab[i]->surface, NULL, ecran, &(trou->tab[i]->position_pion));
 			i++;
+			
 		}
-		fclose(f);
+		
+		// Fermeture du fichier contenant les positions des trous
+		fclose(fichier_plateau);
+		
+		// Mise à jour de l'affichage
 		SDL_Flip(ecran); 
 		
 	}
-	else {
+	
+	// Gestion des erreurs
+	else 
+	{
+		
 		fprintf(stderr, "Erreur d'initialisation du plateau : %s\n", SDL_GetError());
 		exit(EXIT_FAILURE);
+		
 	}
-	
 	
 }
 
 
-/**
-
-Fonction d'allocations des pions
-
-**/
-void init_Pion(Plateau * plateau) {
-	int k;
-	for(k=0; k <60; k++) {
-	plateau->tab[k] = (Pion *)malloc(sizeof(Pion));
-	}
-}
-
-
-/**
-
-Fonction de libération des pions
-
-**/
-void free_plateau(Plateau * plateau) {
+// Fonction d'allocation mémoire de la position des pions
+void init_Pion (Plateau * plateau) 
+{
+	
 	int i;
-	for(i=0; i <60; i++) {
-		SDL_FreeSurface(plateau->tab[i]->surface);
+	
+	for(i=0; i<60; i++) 
+	{
+		
+		plateau->tab[i] = (Pion*) malloc(sizeof(Pion));
+		
 	}
+	
 }
+
+
+// Fonction de libération de la mémoire allouée à la position des pions
+void free_plateau (Plateau * plateau) 
+{
 	
+	int i;
 	
+	for(i=0; i <60; i++) 
+	{
+		
+		SDL_FreeSurface(plateau->tab[i]->surface);
+		
+	}
+	
+}
 	
 	
