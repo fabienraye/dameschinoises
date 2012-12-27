@@ -1,46 +1,60 @@
-#include "dameschinoises.h"
 #include <stdio.h>
 #include <string.h>
 
-//////////////////////////////////////////////////////////
-// Dans la librairie
-//
+#include "dameschinoises.h"
+
+/* ***************** */
+/* Dans la librairie */
+/* ***************** */
 
 void InitLibrary(char name[50])
 {
-  printf("InitLibrary\n");
+	
+	printf("InitLibrary \n");
 	strcpy(name,"Fabien Picarougne");
+	
 }
 
 void StartMatch(const unsigned int nbJoueur, const EPlayer couleur)
 {
-	printf("StartMatch\n");
+	
+	printf("StartMatch \n");
+	
 }
 
 void StartGame()
 {
-	printf("StartGame\n");
+	
+	printf("StartGame \n");
+	
 }
 
 void EndGame()
 {
-	printf("EndGame\n");
+	
+	printf("EndGame \n");
+	
 }
 
 void EndMatch()
 {
-	printf("EndMatch\n");
+	
+	printf("EndMatch \n");
+	
 }
 
 int NextMove(const SGameState * const gameState, int firstMove, SMove *move)
 {
-	printf("NextMove\n");
+	
+	printf("NextMove \n");
+	
 	return(0);
+	
 }
 
-//////////////////////////////////////////////////////////
-// Dans l'exécutable
-//
+/* ****************** */
+/* Dans l'exécutable */
+/* ****************** */
 
 void deroulement_du_jeu()	
 //int main()
@@ -51,7 +65,7 @@ void deroulement_du_jeu()
 	//*****// à faire pour chaque joueur
 	
 	// Chargement de la librairie (chargement des pointeurs de fonctions des fonctions décrites dans "backgammon.h")
-	// -> à ermplacer par votre code de chargement
+	// -> à remplacer par votre code de chargement
 	pfInitLibrary j1InitLibrary=InitLibrary;
 	pfStartMatch j1StartMatch=StartMatch;
 	pfStartGame j1StartGame=StartGame;
