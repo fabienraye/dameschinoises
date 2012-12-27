@@ -1,2 +1,1 @@
-
-void pause() ;
+void pause();
