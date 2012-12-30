@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_image.h>
 
 #include "plateau.h"
 #include "SDL/SDL.h"
 
-// Fonction initialisant la position des pions sur le plateau
-void init_Position (SDL_Surface *ecran, Plateau *plateau) 
+// Fonction initialisant la position des pions sur le plateau (init_Position)
+void init_position_pions (SDL_Surface *ecran, Plateau *plateau) 
 {
 	
 	int x; 									// Position x (horizontale) du pion
@@ -36,6 +37,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 			switch(couleur) 
 			{
 				
+				// Couleur 1 : ROUGE
 				case 1 : 
 					
 					plateau->tab[i]->surface= IMG_Load("Image/red.png");
@@ -44,6 +46,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 				
 				break;
 				
+				// Couleur 2 : BLEU
 				case 2 :
 					
 					plateau->tab[i]->surface = IMG_Load("Image/blue.png");
@@ -52,6 +55,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 				
 				break;
 				
+				// Couleur 3 : JAUNE
 				case 3 :
 					
 					plateau->tab[i]->surface= IMG_Load("Image/yellow.png");
@@ -60,6 +64,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 				
 				break;
 				
+				// Couleur 4 : GRIS
 				case 4 :
 					
 					plateau->tab[i]->surface = IMG_Load("Image/grey.png");
@@ -68,6 +73,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 				
 				break;
 				
+				// Couleur 5 : VERT
 				case 5 :
 					
 					plateau->tab[i]->surface = IMG_Load("Image/green.png");
@@ -76,6 +82,7 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 				
 				break;
 				
+				// Couleur 6 : VIOLET
 				case 6 :
 					
 					plateau->tab[i]->surface= IMG_Load("Image/purple.png");
@@ -110,8 +117,8 @@ void init_Position (SDL_Surface *ecran, Plateau *plateau)
 	
 }
 
-// Fonction initialisant la position des trous sur le plateau
-void init_Trou (SDL_Surface *ecran, Trou *trou) 
+// Fonction initialisant la position des trous sur le plateau (init_Trou)
+void init_position_trous (SDL_Surface *ecran, Trou *trou) 
 {
 	
 	int x;					// Position x (horizontale) du trou
@@ -137,7 +144,7 @@ void init_Trou (SDL_Surface *ecran, Trou *trou)
 	{
 		
 		// Lecture du fichier contenant les positions des trous
-		while(fscanf(f,"%d %d %d", &couleur, &x, &y) != EOF) 
+		while(fscanf(fichier_plateau,"%d %d %d", &couleur, &x, &y) != EOF) 
 		{
 			
 			trou->tab[i]->position_pion.x = x-100;
@@ -168,8 +175,8 @@ void init_Trou (SDL_Surface *ecran, Trou *trou)
 }
 
 
-// Fonction d'allocation mémoire de la position des pions
-void init_Pion (Plateau * plateau) 
+// Fonction d'allocation mémoire de la position des pions (init_Pion)
+void allocation_memoire_position_pions (Plateau *plateau) 
 {
 	
 	int i;
@@ -184,8 +191,8 @@ void init_Pion (Plateau * plateau)
 }
 
 
-// Fonction de libération de la mémoire allouée à la position des pions
-void free_plateau (Plateau * plateau) 
+// Fonction de libération de la mémoire allouée à la position des pions (free_Plateau)
+void liberation_memoire_position_pions (Plateau *plateau) 
 {
 	
 	int i;
