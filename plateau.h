@@ -1,3 +1,4 @@
+// Structure définissant un pion pour la librairie SDL
 typedef struct 
 {
 	
@@ -6,6 +7,7 @@ typedef struct
 	
 } Pion;
 
+// Structure définissant les 60 pions du jeu (6 joueurs * 10 pions par joueur)
 typedef struct 
 {
 	
@@ -13,6 +15,7 @@ typedef struct
 	
 } Plateau;
 
+// Structure définissant les 121 trous du plateau de dames chinoises
 typedef struct 
 {
 	
