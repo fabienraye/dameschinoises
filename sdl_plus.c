@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_image.h>
 
@@ -15,7 +16,7 @@ void pause()
 	
 	SDL_Event event;
 
-	while(continuer)
+	while(continuer == 1)
 	{
 		
 		SDL_WaitEvent(&event);
