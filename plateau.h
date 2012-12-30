@@ -13,7 +13,7 @@ typedef struct
 	
 	Pion *tab[60];
 	
-} Plateau;
+} Pions;
 
 // Structure définissant les 121 trous du plateau de dames chinoises
 typedef struct 
@@ -21,9 +21,9 @@ typedef struct
 	
 	Pion *tab[121];
 	
-} Trou;
+} Plateau;
 
-void init_position_pions (SDL_Surface *ecran, Plateau *plateau) ;
-void init_position_trous (SDL_Surface *ecran, Trou *trou);
-void allocation_memoire_position_pions (Plateau *plateau);
-void liberation_memoire_position_pions (Plateau *plateau);
+void init_position_pions (SDL_Surface *ecran, Pions *pions) ;
+void init_position_trous (SDL_Surface *ecran, Plateau *plateau);
+void allocation_memoire_position_pions (Pions *pions);
+void liberation_memoire_position_pions (Pions *pions);
