@@ -23,7 +23,7 @@ typedef struct
 	
 } Trou;
 
-void init_Position(SDL_Surface *ecran, Plateau *plateau);
-void init_Trou (SDL_Surface *ecran, Trou *trou);
-void init_Pion(Plateau *plateau); 
-void free_plateau(Plateau *plateau) ;
+void init_position_pions (SDL_Surface *ecran, Plateau *plateau) ;
+void init_position_trous (SDL_Surface *ecran, Trou *trou);
+void allocation_memoire_position_pions (Plateau *plateau);
+void liberation_memoire_position_pions (Plateau *plateau);
