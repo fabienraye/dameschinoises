@@ -17,9 +17,27 @@ int main(int argc, char *argv[])
 	
 	/* INITIALISATION DE LA LIBRAIRIE SDL */
 	
-	// Création de la surface "écran"
-	SDL_Surface *ecran = NULL, *icone=NULL;
+	// Création des surfaces
+	SDL_Surface *ecran = NULL;
+	SDL_Surface *icone=NULL;
+	
+	// Démarrage du module vidéo de la librairie SDL
 	SDL_Init(SDL_INIT_VIDEO);
+	
+	/* GESTION DE LA FENETRE */
+	
+	// Paramétrage de la surface "écran
+	ecran = SDL_SetVideoMode(WINDOW_X, WINDOW_Y, NB_COLOR, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	
+	// Définition de l'icone de la fenêtre
+	icone = SDL_LoadBMP("icone.bmp");
+	SDL_WM_SetIcon(icone, NULL);
+	
+	// Définition du titre de la fenêtre
+	SDL_WM_SetCaption("Dames Chinoises", NULL);
+	
+	// Gestion de l'affichage fond de la fenêtre
+	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 17, 6, 112));
 	
 	/* GESTION DES ERREURS SDL */
 	
@@ -39,33 +57,19 @@ int main(int argc, char *argv[])
 		
 	}
 	
-	/* GESTION DE LA FENETRE */
-	
-	// Paramétrage de la surface "écran
-	ecran = SDL_SetVideoMode(WINDOW_X, WINDOW_Y, NB_COLOR, SDL_HWSURFACE | SDL_DOUBLEBUF);
-	
-	// Définition de l'icone de la fenêtre
-	icone = SDL_LoadBMP("icon.bmp");
-	SDL_WM_SetIcon(icone, NULL);
-	
-	// Définition du titre de la fenêtre
-	SDL_WM_SetCaption("Dames Chinoises -- SVMR", NULL);
-	
-	// Gestion de l'affichage fond de la fenêtre
-	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 17, 6, 112));
-	
 	// Gestion de l'affichage des trous du plateau
 	Trou *trou = (Trou*) malloc(sizeof(Trou));
-	init_Trou(ecran, trou);
+	init_position_trous (ecran, trou);
 	
 	// Gestion de l'affichage des pions sur le plateau
-	Plateau *plateau = (Plateau*)malloc(sizeof(Plateau));
-	init_Pion(plateau);
-	init_Position(ecran, plateau) ;
+	Plateau *plateau = (Plateau*) malloc(sizeof(Plateau));
+	allocation_memoire_position_pions (plateau);
+	init_position_pions(ecran, plateau) ;
 	
 	// Mise à jour de l'affichage
 	SDL_Flip(ecran); 
 
+	// Attente d'un évènement SDL
 	pause();
 
 	// Fermeture de la librairie SDL
