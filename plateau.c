@@ -25,6 +25,8 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 
 	log=fopen("log_position_trous.txt", "w");
 	
+	/* GESTION DE LA MEMOIRE */
+	
 	for (k=0; k <121; k++) 
 	{
 		
@@ -34,6 +36,8 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 		
 	}
 	
+	/* AFFICHAGE DES TROUS DU PLATEAU */
+	
 	// Ouverture du fichier contenant les positions des trous
 	if ((fichier_plateau = fopen("plateau.txt", "r"))) 
 	{
@@ -42,10 +46,11 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 		while(fscanf(fichier_plateau,"%d %d %d", &couleur, &x, &y) != EOF) 
 		{
 			
-			plateau->tab[i]->position_pion.x = x-100;
-			plateau->tab[i]->position_pion.y = y-100;
+			plateau->tab[i]->position_pion.x = x;
+			plateau->tab[i]->position_pion.y = y;
 			
-			plateau->tab[i]->surface= IMG_Load("Image/hole.png");
+			// fonction qui déconne
+			plateau->tab[i]->surface=IMG_Load("Image/hole.png");
 			SDL_BlitSurface(plateau->tab[i]->surface, NULL, ecran, &(plateau->tab[i]->position_pion));
 			
 			fprintf(log, "Affichage du trou %d : \t \t x=%d \t y=%d  \n", i, plateau->tab[i]->position_pion.x, plateau->tab[i]->position_pion.y);
@@ -62,7 +67,8 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 		
 	}
 	
-	// Gestion des erreurs
+	/* GESTION DES ERREURS SDL */
+	
 	else 
 	{
 		
@@ -92,6 +98,8 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 	
 	log=fopen("log_position_pions.txt", "w");
 	
+	/* AFFICHAGE DES PIONS DU PLATEAU */
+	
 	// Ouverture du fichier contenant les positions des pions
 	if((fichier_plateau = fopen("plateau.txt", "r"))) 
 	{
@@ -101,10 +109,11 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 		{
 		
 			// Affectation des positions des pions sur le plateau
-			pions->tab[i]->position_pion.x = x-100;
-			pions->tab[i]->position_pion.y = y-100;
+			pions->tab[i]->couleur = couleur;
+			pions->tab[i]->position_pion.x = x;
+			pions->tab[i]->position_pion.y = y;
 			
-			fprintf(log, "Affectation de la position du pion %d : \t x=%d \t y=%d \t couleur=%d \n", i, pions->tab[i]->position_pion.x, pions->tab[i]->position_pion.y, couleur);
+			fprintf(log, "Affectation de la position du pion %d : \t couleur=%d \t x=%d \t y=%d  \n", i, couleur, pions->tab[i]->position_pion.x, pions->tab[i]->position_pion.y);
 			
 			// Affectation de la couleur des pions
 			switch(couleur) 
@@ -165,6 +174,7 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 				break;
 				
 				default :
+					
 				break;
 				
 			}
@@ -179,7 +189,8 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 		
 	}
 	
-	// Gestion des erreurs
+	/* GESTION DES ERREURS SDL */
+	
 	else 
 	{
 		
@@ -207,7 +218,6 @@ void allocation_memoire_position_pions (Pions *pions)
 	
 }
 
-
 // Fonction de libération de la mémoire allouée à la position des pions (free_Plateau)
 void liberation_memoire_position_pions (Pions *pions) 
 {
@@ -222,5 +232,93 @@ void liberation_memoire_position_pions (Pions *pions)
 	}
 	
 }
+
+void mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions)
+{
 	
+	int x_depart;
+	int y_depart;
 	
+	int x_arrivee;
+	int y_arrivee;
+	
+	int couleur;
+	
+	couleur = pions->tab[depart]->couleur;
+	
+	switch(couleur) 
+	{
+		
+		// Couleur 1 : ROUGE
+		case 1 : 
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/red.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 2 : BLEU
+		case 2 :
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/blue.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 3 : JAUNE
+		case 3 :
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/yellow.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 4 : GRIS
+		case 4 :
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/grey.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 5 : VERT
+		case 5 :
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/green.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 6 : VIOLET
+		case 6 :
+			
+			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
+			pions->tab[arrivee]->surface = IMG_Load("Image/purple.png");
+		
+			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
+			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+		
+		break;
+		
+		default :
+			
+		break;
+		
+	}
+	
+}
