@@ -233,16 +233,11 @@ void liberation_memoire_position_pions (Pions *pions)
 	
 }
 
-void mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions)
+// Fonction d'affichage d'un mouvement de pion
+void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions)
 {
 	
-	int x_depart;
-	int y_depart;
-	
-	int x_arrivee;
-	int y_arrivee;
-	
-	int couleur;
+	int couleur;						// Couleur du pion à déplacer
 	
 	couleur = pions->tab[depart]->couleur;
 	
@@ -320,5 +315,19 @@ void mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions)
 		break;
 		
 	}
+	
+}
+
+// Fonction permettant d'identifier un pion à partir des coordonnées d'un clic de souris
+void identifier_pion(int x_souris, int y_souris)
+{
+	
+	FILE *log;
+	
+	log=fopen("log_clics_souris.txt", "a");
+	
+	fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
+	
+	fclose(log);
 	
 }
