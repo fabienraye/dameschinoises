@@ -7,6 +7,7 @@ typedef struct
 	SDL_Surface *surface;
 	SDL_Rect position_pion;
 	
+	int id;
 	int couleur;
 	
 } Pion;
@@ -35,4 +36,4 @@ void allocation_memoire_position_pions (Pions *pions);
 void liberation_memoire_position_pions (Pions *pions);
 void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions);
 
-void identifier_pion(int x_souris, int y_souris);
+int identifier_pion(int x_souris, int y_souris);
