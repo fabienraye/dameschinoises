@@ -330,13 +330,21 @@ int identifier_pion(int x_souris, int y_souris)
 	int x;						// Coordonnée x du pion
 	int y;						// Coordonnée y du pion
 	
+	int xmin;						// 						
+	int xmax;						// 
+	int ymin;						// 
+	int ymax;						// 
+	
 	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
 	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
 	
+	int id_possible[60];				// Tableau contenant les identifiants de pions potentiellement cliqués aux coordonnées de la souris
+	int id_clique;					// Identifiant du pion qui a été cliqué
+	
 	FILE *pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	
-	FILE *x_range;					// Fichier contenant la portée en largeur de chaque surface
-	FILE *y_range;					// Fichier contenant la portée en hauteur de chaque surface
+	FILE *x_range;					// Fichier contenant l'espace occupé en largeur par chaque pion
+	FILE *y_range;					// Fichier contenant l'espace occupé en hauteur par chaque pion
 	
 	FILE *log;						// Fichier log
 	
@@ -360,6 +368,36 @@ int identifier_pion(int x_souris, int y_souris)
 		
 		fprintf(x_range, "%d %d %d \n", id, x, x+largeur_image);
 		fprintf(y_range, "%d %d %d \n", id, y, y+hauteur_image);
+		
+	}
+	
+	while(fscanf(y_range,"%d %d %d", &id, &ymin, &ymax) != EOF) 
+	{
+		
+		if (y_souris >= ymin && y_souris <= ymax)
+		{
+			
+			id_possible[id]=id;
+			
+		}
+		
+	}
+	
+	while(fscanf(x_range,"%d %d %d", &id, &xmin, &xmax) != EOF) 
+	{
+		
+		if (x_souris >= xmin && x_souris <= xmax)
+		{
+			
+			if (id_possible[id] != NULL)
+			{
+				
+				id_clique=id;
+				fprintf(log, "ID cliqué : %d", id);
+				
+			}
+			
+		}
 		
 	}
 	
