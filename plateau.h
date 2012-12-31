@@ -1,9 +1,13 @@
+/* STRUCTURES */
+
 // Structure définissant un pion pour la librairie SDL
 typedef struct 
 {
 	
 	SDL_Surface *surface;
 	SDL_Rect position_pion;
+	
+	int couleur;
 	
 } Pion;
 
@@ -23,7 +27,11 @@ typedef struct
 	
 } Plateau;
 
+/* PROTOTYPES */
+
 void init_position_pions (SDL_Surface *ecran, Pions *pions);
 void init_position_trous (SDL_Surface *ecran, Plateau *plateau);
 void allocation_memoire_position_pions (Pions *pions);
 void liberation_memoire_position_pions (Pions *pions);
+
+void mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions);
