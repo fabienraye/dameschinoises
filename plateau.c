@@ -330,16 +330,21 @@ int identifier_pion(int x_souris, int y_souris)
 	int x;						// Coordonnée x du pion
 	int y;						// Coordonnée y du pion
 	
-	int xmin;						// 						
-	int xmax;						// 
-	int ymin;						// 
-	int ymax;						// 
+	int xmin;						// Borne x minimale pour être dans la surface
+	int xmax;						// Borne x maximale pour être dans la surface
+	int ymin;						// Borne y minimale pour être dans la surface
+	int ymax;						// Borne y maximale pour être dans la surface
 	
 	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
 	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
 	
-	int id_possible[60];				// Tableau contenant les identifiants de pions potentiellement cliqués aux coordonnées de la souris
-	int id_clique;					// Identifiant du pion qui a été cliqué
+	int id_possible[121];			// Tableau contenant les identifiants des pions potentiellement cliqués aux coordonnées de la souris
+	
+	int i;						// Compteur
+	int k;						// Compteur
+	
+	i=0;
+	k=0;
 	
 	FILE *pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	
@@ -353,15 +358,15 @@ int identifier_pion(int x_souris, int y_souris)
 	log=fopen("log_identifier_pions.txt", "a");
 	
 	pions=fopen("pions.txt", "r");
-	x_range=fopen("x_range.txt", "w");
-	y_range=fopen("y_range.txt", "w");
+	x_range=fopen("x_range.txt", "w+");
+	y_range=fopen("y_range.txt", "w+");
 	
 	image_pion = IMG_Load("Image/hole.png");
 	
 	largeur_image=image_pion->w;
 	hauteur_image=image_pion->h;
 	
-	fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
+	// fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
 	
 	while(fscanf(pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF) 
 	{
@@ -371,29 +376,57 @@ int identifier_pion(int x_souris, int y_souris)
 		
 	}
 	
+	// Retour au début des fichiers
+	rewind(x_range);
+	rewind(y_range);
+	
 	while(fscanf(y_range,"%d %d %d", &id, &ymin, &ymax) != EOF) 
 	{
+		
+		// fprintf(log, "Test ID : %d \n", id);
 		
 		if (y_souris >= ymin && y_souris <= ymax)
 		{
 			
-			id_possible[id]=id;
+			id_possible[i]=id;
+			i++;
+			
+			// fprintf(log, "ID possible : %d \n", id);
 			
 		}
 		
 	}
-	
-	while(fscanf(x_range,"%d %d %d", &id, &xmin, &xmax) != EOF) 
+
+	// Le pion n'est sur aucune ligne : le joueur a cliqué dans le vide
+	if (i == 0)
 	{
 		
-		if (x_souris >= xmin && x_souris <= xmax)
+		id=-1;
+		fprintf(log, "Clic dans le vide \n");
+		
+	}
+	
+	// Sinon on cherche la colonne du pion
+	else
+	{
+		
+		while(fscanf(x_range,"%d %d %d", &id, &xmin, &xmax) != EOF) 
 		{
 			
-			if (id_possible[id] != NULL)
+			for (k=0; k<=i; k++)
 			{
 				
-				id_clique=id;
-				fprintf(log, "ID cliqué : %d", id);
+				if (id == id_possible[k])
+				{
+					
+					if (x_souris >= xmin && x_souris <= xmax)
+					{
+						
+						fprintf(log, "ID cliqué : %d \n", id);
+
+					}
+					
+				}
 				
 			}
 			
