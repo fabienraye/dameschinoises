@@ -13,7 +13,6 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	
 	int x;					// Position x (horizontale) du trou
 	int y; 					// Position y (verticale) du trou
-	int couleur;
 	
 	int k;					// Compteur de boucle
 	int i;					// Compteur de boucle
@@ -21,16 +20,11 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	i=0;
 	
 	FILE *fichier_plateau;
-	FILE *log;
-
-	log=fopen("log_position_trous.txt", "w");
 	
 	/* GESTION DE LA MEMOIRE */
 	
 	for (k=0; k <121; k++) 
 	{
-		
-		fprintf(log, "Allocation mémoire pour le trou %d \n", k);
 		
 		plateau->tab[k] = (Pion*) malloc(sizeof(Pion));
 		
@@ -39,21 +33,20 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	/* AFFICHAGE DES TROUS DU PLATEAU */
 	
 	// Ouverture du fichier contenant les positions des trous
-	if ((fichier_plateau = fopen("plateau.txt", "r"))) 
+	if ((fichier_plateau = fopen("trous.txt", "r"))) 
 	{
 		
 		// Lecture du fichier contenant les positions des trous
-		while(fscanf(fichier_plateau,"%d %d %d", &couleur, &x, &y) != EOF) 
+		while(fscanf(fichier_plateau,"%d %d", &x, &y) != EOF) 
 		{
 			
+			// Affectation de la positions du trou sur le plateau
 			plateau->tab[i]->position_pion.x = x;
 			plateau->tab[i]->position_pion.y = y;
 			
-			// fonction qui déconne
+			// Affichage du trou sur le plateau
 			plateau->tab[i]->surface=IMG_Load("Image/hole.png");
 			SDL_BlitSurface(plateau->tab[i]->surface, NULL, ecran, &(plateau->tab[i]->position_pion));
-			
-			fprintf(log, "Affichage du trou %d : \t \t x=%d \t y=%d  \n", i, plateau->tab[i]->position_pion.x, plateau->tab[i]->position_pion.y);
 			
 			i++;
 			
@@ -72,12 +65,10 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	else 
 	{
 		
-		fprintf(log, "Erreur dans la fonction d'initialisation de la position des trous (init_position_trous) : %s \n", SDL_GetError());
+		fprintf(stderr, "Erreur dans la fonction d'initialisation de la position des trous (init_position_trous) : %s \n", SDL_GetError());
 		exit(EXIT_FAILURE);
 		
 	}
-	
-	fclose(log);
 	
 }
 
@@ -88,32 +79,34 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 	int x; 									// Position x (horizontale) du pion
 	int y; 									// Position y (verticale) du pion
 	int couleur; 								// Couleur du pion
+	int id;									// Identifiant unique du pion
 	
 	int i;									// Compteur de boucle
 	
 	i=0;
 	
-	FILE *fichier_plateau;						// Fichier contenant les positions (x,y) des pions et leur couleur
-	FILE *log;
+	FILE *fichier_plateau;						// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
+	FILE *log;									// Fichier log
 	
 	log=fopen("log_position_pions.txt", "w");
 	
 	/* AFFICHAGE DES PIONS DU PLATEAU */
 	
 	// Ouverture du fichier contenant les positions des pions
-	if((fichier_plateau = fopen("plateau.txt", "r"))) 
+	if((fichier_plateau = fopen("pions.txt", "r"))) 
 	{
 	
 		// Lecture du fichier contenant les positions des pions
-		while(fscanf(fichier_plateau,"%d %d %d", &couleur, &x, &y) != EOF) 
+		while(fscanf(fichier_plateau,"%d %d %d %d", &id, &couleur, &x, &y) != EOF) 
 		{
 		
 			// Affectation des positions des pions sur le plateau
+			pions->tab[i]->id = id;
 			pions->tab[i]->couleur = couleur;
 			pions->tab[i]->position_pion.x = x;
 			pions->tab[i]->position_pion.y = y;
 			
-			fprintf(log, "Affectation de la position du pion %d : \t couleur=%d \t x=%d \t y=%d  \n", i, couleur, pions->tab[i]->position_pion.x, pions->tab[i]->position_pion.y);
+			fprintf(log, "%d %d %d %d  \n", i, couleur, pions->tab[i]->position_pion.x, pions->tab[i]->position_pion.y);
 			
 			// Affectation de la couleur des pions
 			switch(couleur) 
@@ -181,6 +174,8 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 			
 		}
 		
+		
+		
 		// Fermeture du fichier contenant les positions des pions
 		fclose(fichier_plateau);
 		
@@ -230,6 +225,14 @@ void liberation_memoire_position_pions (Pions *pions)
 		SDL_FreeSurface(pions->tab[i]->surface);
 		
 	}
+	
+}
+
+// Fonction permettant d'effectuer un mouvement
+void mouvement(int depart, int arrivee, Plateau *plateau)
+{
+	
+	
 	
 }
 
@@ -319,15 +322,52 @@ void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pion
 }
 
 // Fonction permettant d'identifier un pion à partir des coordonnées d'un clic de souris
-void identifier_pion(int x_souris, int y_souris)
+int identifier_pion(int x_souris, int y_souris)
 {
 	
-	FILE *log;
+	int id;						// Identifiant du pion
+	int couleur;					// Couleur du pion
+	int x;						// Coordonnée x du pion
+	int y;						// Coordonnée y du pion
 	
-	log=fopen("log_clics_souris.txt", "a");
+	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
+	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
+	
+	FILE *pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
+	
+	FILE *x_range;					// Fichier contenant la portée en largeur de chaque surface
+	FILE *y_range;					// Fichier contenant la portée en hauteur de chaque surface
+	
+	FILE *log;						// Fichier log
+	
+	SDL_Surface *image_pion; 
+	
+	log=fopen("log_identifier_pions.txt", "a");
+	
+	pions=fopen("pions.txt", "r");
+	x_range=fopen("x_range.txt", "w");
+	y_range=fopen("y_range.txt", "w");
+	
+	image_pion = IMG_Load("Image/hole.png");
+	
+	largeur_image=image_pion->w;
+	hauteur_image=image_pion->h;
 	
 	fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
 	
+	while(fscanf(pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF) 
+	{
+		
+		fprintf(x_range, "%d %d %d \n", id, x, x+largeur_image);
+		fprintf(y_range, "%d %d %d \n", id, y, y+hauteur_image);
+		
+	}
+	
+	fclose(y_range);
+	fclose(x_range);
+	fclose(pions);
 	fclose(log);
+	
+	return 0;
 	
 }
