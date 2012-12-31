@@ -32,7 +32,9 @@ int main(int argc, char *argv[])
 	
 	/* GESTION DE LA FENETRE */
 	
-	// Définition de l'icone de la fenêtre
+	fprintf(log, "***** Affichage de l'icone de la fenêtre \n");
+	
+	// Affichage de l'icone de la fenêtre
 	icone = SDL_LoadBMP("icone.bmp");
 	SDL_WM_SetIcon(icone, NULL);
 	
@@ -44,8 +46,8 @@ int main(int argc, char *argv[])
 	
 	fprintf(log, "***** Affichage du background \n");
 	
-	// Gestion de l'affichage fond de la fenêtre
-	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 17, 6, 112));
+	// Affichage fond de la fenêtre
+	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
 	
 	/* GESTION DES ERREURS SDL */
 	
@@ -65,25 +67,34 @@ int main(int argc, char *argv[])
 		
 	}
 	
+	/* AFFICHAGE DU PLATEAU DE JEU */
+	
 	fprintf(log, "***** Affichage des trous du plateau (appel à la fonction init_position_trous) \n");
 	
-	// Gestion de l'affichage des trous du plateau
+	// Affichage des trous du plateau
 	Plateau *plateau = (Plateau*) malloc(sizeof(Plateau));
 	init_position_trous (ecran, plateau);
 	
 	fprintf(log, "***** Affichage des pions sur le plateau (appel à la fonction init_position_pions) \n");
 	
-	// Gestion de l'affichage des pions sur le plateau
+	// Affichage des pions sur le plateau
 	Pions *pions = (Pions*) malloc(sizeof(Pions));
 	allocation_memoire_position_pions(pions);
 	init_position_pions(ecran, pions);
+	
+	fprintf(log, "***** Mise à jour de l'affichage \n");
+	
+	mouvement(0, 59, ecran, pions);
+	mouvement(10, 58, ecran, pions);
 	
 	// Mise à jour de l'affichage
 	SDL_Flip(ecran); 
 
 	// Attente d'un évènement SDL
 	pause();
-
+	
+	fprintf(log, "***** Fermeture de la librairie SDL \n");
+	
 	// Fermeture de la librairie SDL
 	SDL_Quit();
 	
