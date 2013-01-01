@@ -94,6 +94,9 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 		
 	}
 	
+	fclose(x_range_trous);
+	fclose(y_range_trous);
+	
 }
 
 // Fonction initialisant la position des pions sur le pions (init_Position)
@@ -354,6 +357,8 @@ int identifier_pion(int x_souris, int y_souris)
 	int x;						// Coordonnée x du pion
 	int y;						// Coordonnée y du pion
 	
+	int test;
+	
 	int xmin;						// Borne x minimale pour être dans la surface
 	int xmax;						// Borne x maximale pour être dans la surface
 	int ymin;						// Borne y minimale pour être dans la surface
@@ -373,7 +378,6 @@ int identifier_pion(int x_souris, int y_souris)
 	/* GESTION DES FICHIERS */
 	
 	FILE *pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
-	FILE *trous;					// Fichier contenant l'identifiant et la position (x,y) de chaque trou
 	
 	FILE *x_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
 	FILE *y_range_trous;			// Fichier contenant l'espace occupé en hauteur par chaque trou
@@ -387,13 +391,8 @@ int identifier_pion(int x_souris, int y_souris)
 	log=fopen("log_identifier_pions.txt", "a");
 	
 	pions=fopen("pions.txt", "r");
-	trous=fopen("trous.txt", "r");
-	
 	x_range_pions=fopen("x_range_pions.txt", "w+");
 	y_range_pions=fopen("y_range_pions.txt", "w+");
-	
-	x_range_trous=fopen("x_range_trous.txt", "r");
-	y_range_trous=fopen("y_range_trous.txt", "r");
 	
 	image_pion = IMG_Load("Image/hole.png");
 	
@@ -402,48 +401,38 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	// fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
 	
-	while(fscanf(pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF)
+	if (pions != NULL && x_range_pions != NULL && y_range_pions != NULL)
 	{
 		
-		fprintf(x_range_pions, "%d %d %d \n", id, x, x+largeur_image);
-		fprintf(y_range_pions, "%d %d %d \n", id, y, y+hauteur_image);
-		
-	}
-	
-	// Retour au début des fichiers
-	rewind(x_range_pions);
-	rewind(y_range_pions);
-	
-	while(fscanf(y_range_pions,"%d %d %d", &id, &ymin, &ymax) != EOF) 
-	{
-		
-		// fprintf(log, "Test ID : %d \n", id);
-		
-		if (y_souris >= ymin && y_souris <= ymax)
+		while(fscanf(pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF)
 		{
 			
-			id_possible[i]=id;
-			i++;
-			
-			// fprintf(log, "ID possible : %d \n", id);
+			fprintf(x_range_pions, "%d %d %d \n", id, x, x+largeur_image);
+			fprintf(y_range_pions, "%d %d %d \n", id, y, y+hauteur_image);
 			
 		}
 		
-	}
-
-	// Le pion n'est sur aucune ligne : le joueur a cliqué dans le vide
-	if (i == 0)
-	{
+		// Retour au début des fichiers
+		rewind(x_range_pions);
+		rewind(y_range_pions);
 		
-		id=-1;
-		fprintf(log, "Clic dans le vide \n");
-		
-	}
-	
-	// Sinon on cherche la colonne du pion
-	else
-	{
-		
+		while(fscanf(y_range_pions,"%d %d %d", &id, &ymin, &ymax) != EOF) 
+		{
+			
+			// fprintf(log, "Test ID pion : %d \n", id);
+			
+			if (y_souris >= ymin && y_souris <= ymax)
+			{
+				
+				id_possible[i]=id;
+				i++;
+				
+				// fprintf(log, "ID pion possible : %d \n", id);
+				
+			}
+			
+		}
+			
 		while(fscanf(x_range_pions,"%d %d %d", &id, &xmin, &xmax) != EOF) 
 		{
 			
@@ -456,7 +445,61 @@ int identifier_pion(int x_souris, int y_souris)
 					if (x_souris >= xmin && x_souris <= xmax)
 					{
 						
-						fprintf(log, "ID cliqué : %d \n", id);
+						fprintf(log, "ID pion cliqué : %d \n", id);
+
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	fclose(y_range_pions);
+	fclose(x_range_pions);
+	fclose(pions);
+	
+	x_range_trous=fopen("x_range_trous.txt", "r");
+	y_range_trous=fopen("y_range_trous.txt", "r");
+	
+	i=0;
+	k=0;
+	
+	if (x_range_trous != NULL && y_range_trous != NULL)
+	{
+		
+		while(fscanf(y_range_trous,"%d %d %d", &id, &ymin, &ymax) != EOF) 
+		{
+			
+			if (y_souris >= ymin && y_souris <= ymax)
+			{
+				
+				id_possible[i]=id;
+				i++;
+				
+				fprintf(log, "ID trou possible : %d \n", id);
+				
+			}
+			
+			j++;
+			
+		}
+		
+		while(fscanf(x_range_trous,"%d %d %d", &id, &xmin, &xmax) == 3) 
+		{
+			
+			for (k=0; k<=i; k++)
+			{
+				
+				if (id == id_possible[k])
+				{
+					
+					if (x_souris >= xmin && x_souris <= xmax)
+					{
+						
+						fprintf(log, "ID trou cliqué : %d \n", id);
 
 					}
 					
@@ -469,9 +512,9 @@ int identifier_pion(int x_souris, int y_souris)
 	}
 	
 	// Fermeture des fichiers
-	fclose(y_range_pions);
-	fclose(x_range_pions);
-	fclose(pions);
+	fclose(y_range_trous);
+	fclose(x_range_trous);
+	
 	fclose(log);
 	
 	return id;
