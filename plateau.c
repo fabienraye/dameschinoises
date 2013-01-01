@@ -18,8 +18,8 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
 	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
 	
-	int k;						// Compteur de boucle
 	int i;						// Compteur de boucle
+	int k;						// Compteur de boucle
 	
 	i=0;
 	
@@ -27,75 +27,89 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	
 	/* GESTION DES FICHIERS */
 	
-	FILE *trous;
-	
+	FILE *log;
+	FILE *fichier_trous;
 	FILE *x_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
 	FILE *y_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
+	
+	log=fopen("log_init_position_trous.txt", "w");
+	x_range_trous=fopen("x_range_trous.txt", "w+");
+	y_range_trous=fopen("y_range_trous.txt", "w+");
 	
 	image_pion = IMG_Load("Image/hole.png");
 	
 	largeur_image=image_pion->w;
 	hauteur_image=image_pion->h;
 	
-	x_range_trous=fopen("x_range_trous.txt", "w+");
-	y_range_trous=fopen("y_range_trous.txt", "w+");
-	
-	/* GESTION DE LA MEMOIRE */
-	
-	for (k=0; k <121; k++) 
+	if (x_range_trous != NULL && y_range_trous != NULL)
 	{
 		
-		plateau->tab[k] = (Pion*) malloc(sizeof(Pion));
+		/* GESTION DE LA MEMOIRE */
 		
-	}
-	
-	/* AFFICHAGE DES TROUS DU PLATEAU */
-	
-	// Ouverture du fichier contenant les positions des trous
-	if ((trous = fopen("trous.txt", "r"))) 
-	{
-		
-		// Lecture du fichier contenant les positions des trous
-		while(fscanf(trous,"%d %d %d", &id, &x, &y) != EOF) 
+		for (k=0; k <121; k++) 
 		{
 			
-			// Affectation de la positions du trou sur le plateau
-			plateau->tab[i]->id=id;
-			plateau->tab[i]->position_pion.x = x;
-			plateau->tab[i]->position_pion.y = y;
-			
-			// Création des fichiers 
-			fprintf(x_range_trous, "%d %d %d \n", id, x, x+largeur_image);
-			fprintf(y_range_trous, "%d %d %d \n", id, y, y+hauteur_image);
-			
-			// Affichage du trou sur le plateau
-			plateau->tab[i]->surface=IMG_Load("Image/hole.png");
-			SDL_BlitSurface(plateau->tab[i]->surface, NULL, ecran, &(plateau->tab[i]->position_pion));
-			
-			i++;
+			plateau->tab[k] = (Pion*) malloc(sizeof(Pion));
 			
 		}
 		
-		// Fermeture du fichier contenant les positions des trous
-		fclose(trous);
+		/* AFFICHAGE DES TROUS DU PLATEAU */
 		
-		// Mise à jour de l'affichage
-		SDL_Flip(ecran); 
+		// Ouverture du fichier contenant les positions des trous
+		if ((fichier_trous = fopen("trous.txt", "r"))) 
+		{
+			
+			// Lecture du fichier contenant les positions des trous
+			while(fscanf(fichier_trous,"%d %d %d", &id, &x, &y) != EOF) 
+			{
+				
+				// Affectation de la positions du trou sur le plateau
+				plateau->tab[i]->id=id;
+				plateau->tab[i]->position_pion.x = x;
+				plateau->tab[i]->position_pion.y = y;
+				
+				// Création des fichiers 
+				fprintf(x_range_trous, "%d %d %d \n", id, x, x+largeur_image);
+				fprintf(y_range_trous, "%d %d %d \n", id, y, y+hauteur_image);
+				
+				// Affichage du trou sur le plateau
+				plateau->tab[i]->surface=IMG_Load("Image/hole.png");
+				SDL_BlitSurface(plateau->tab[i]->surface, NULL, ecran, &(plateau->tab[i]->position_pion));
+				
+				i++;
+				
+			}
+			
+			// Fermeture du fichier contenant les positions des trous
+			fclose(fichier_trous);
+			
+			// Mise à jour de l'affichage
+			SDL_Flip(ecran); 
+			
+		}
+		
+		/* GESTION DES ERREURS SDL */
+		
+		else 
+		{
+			
+			fprintf(log, "Erreur dans la fonction d'initialisation de la position des trous (init_position_trous) : %s \n", SDL_GetError());
+			exit(EXIT_FAILURE);
+			
+		}
+		
+		// Fermeture des fichiers
+		fclose(x_range_trous);
+		fclose(y_range_trous);
 		
 	}
 	
-	/* GESTION DES ERREURS SDL */
-	
-	else 
+	else
 	{
 		
-		fprintf(stderr, "Erreur dans la fonction d'initialisation de la position des trous (init_position_trous) : %s \n", SDL_GetError());
-		exit(EXIT_FAILURE);
+		fprintf(log, "Erreur lors de l'ouverture des fichiers x_range_trous.txt et y_range_trous.txt");
 		
 	}
-	
-	fclose(x_range_trous);
-	fclose(y_range_trous);
 	
 }
 
@@ -114,19 +128,20 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 	
 	/* GESTION DES FICHIERS */
 	
-	FILE *fichier_plateau;						// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
+	FILE *fichier_pions;							// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	FILE *log;									// Fichier log
 	
 	log=fopen("log_position_pions.txt", "w");
+	fichier_pions=fopen("pions.txt", "r");
 	
 	/* AFFICHAGE DES PIONS DU PLATEAU */
 	
 	// Ouverture du fichier contenant les positions des pions
-	if((fichier_plateau = fopen("pions.txt", "r"))) 
+	if(fichier_pions != NULL) 
 	{
 	
 		// Lecture du fichier contenant les positions des pions
-		while(fscanf(fichier_plateau,"%d %d %d %d", &id, &couleur, &x, &y) != EOF) 
+		while(fscanf(fichier_pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF) 
 		{
 		
 			// Affectation des positions des pions sur le plateau
@@ -204,7 +219,7 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 		}
 		
 		// Fermeture du fichier contenant les positions des pions
-		fclose(fichier_plateau);
+		fclose(fichier_pions);
 		
 		// Mise à jour de l'affichage
 		SDL_Flip(ecran); 
@@ -375,7 +390,7 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	/* GESTION DES FICHIERS */
 	
-	FILE *pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
+	FILE *fichier_pions;				// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	
 	FILE *x_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
 	FILE *y_range_trous;			// Fichier contenant l'espace occupé en hauteur par chaque trou
@@ -388,7 +403,7 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	log=fopen("log_identifier_pions.txt", "a");
 	
-	pions=fopen("pions.txt", "r");
+	fichier_pions=fopen("pions.txt", "r");
 	x_range_pions=fopen("x_range_pions.txt", "w+");
 	y_range_pions=fopen("y_range_pions.txt", "w+");
 	
@@ -399,10 +414,10 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	// fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
 	
-	if (pions != NULL && x_range_pions != NULL && y_range_pions != NULL)
+	if (fichier_pions != NULL && x_range_pions != NULL && y_range_pions != NULL)
 	{
 		
-		while(fscanf(pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF)
+		while(fscanf(fichier_pions,"%d %d %d %d", &id, &couleur, &x, &y) != EOF)
 		{
 			
 			fprintf(x_range_pions, "%d %d %d \n", id, x, x+largeur_image);
@@ -457,7 +472,7 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	fclose(y_range_pions);
 	fclose(x_range_pions);
-	fclose(pions);
+	fclose(fichier_pions);
 	
 	x_range_trous=fopen("x_range_trous.txt", "r");
 	y_range_trous=fopen("y_range_trous.txt", "r");
