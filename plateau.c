@@ -412,7 +412,7 @@ int identifier_pion(int x_souris, int y_souris)
 	largeur_image=image_pion->w;
 	hauteur_image=image_pion->h;
 	
-	// fprintf(log, "x=%d \t y=%d \n", x_souris, y_souris);
+	// fprintf(log, "Coordonnées du clic de souris : x=%d \t y=%d \n", x_souris, y_souris);
 	
 	if (fichier_pions != NULL && x_range_pions != NULL && y_range_pions != NULL)
 	{
@@ -425,6 +425,8 @@ int identifier_pion(int x_souris, int y_souris)
 			
 		}
 		
+		fclose(fichier_pions);
+		
 		// Retour au début des fichiers
 		rewind(x_range_pions);
 		rewind(y_range_pions);
@@ -432,15 +434,13 @@ int identifier_pion(int x_souris, int y_souris)
 		while(fscanf(y_range_pions,"%d %d %d", &id, &ymin, &ymax) != EOF) 
 		{
 			
-			// fprintf(log, "Test ID pion : %d \n", id);
-			
 			if (y_souris >= ymin && y_souris <= ymax)
 			{
 				
 				id_possible[i]=id;
 				i++;
 				
-				// fprintf(log, "ID pion possible : %d \n", id);
+				// fprintf(log, "ID pion possible en y : %d \n", id);
 				
 			}
 			
@@ -454,6 +454,8 @@ int identifier_pion(int x_souris, int y_souris)
 				
 				if (id == id_possible[k])
 				{
+					
+					// fprintf(log, "ID pion possible en x : %d \n", id);
 					
 					if (x_souris >= xmin && x_souris <= xmax)
 					{
@@ -472,7 +474,6 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	fclose(y_range_pions);
 	fclose(x_range_pions);
-	fclose(fichier_pions);
 	
 	x_range_trous=fopen("x_range_trous.txt", "r");
 	y_range_trous=fopen("y_range_trous.txt", "r");
@@ -492,7 +493,7 @@ int identifier_pion(int x_souris, int y_souris)
 				id_possible[i]=id;
 				i++;
 				
-				fprintf(log, "ID trou possible : %d \n", id);
+				fprintf(log, "ID trou possible en y : %d \n", id);
 				
 			}
 			
@@ -507,10 +508,13 @@ int identifier_pion(int x_souris, int y_souris)
 				if (id == id_possible[k])
 				{
 					
+					// fprintf(log, "ID trou possible en x : %d \n", id);
+					
 					if (x_souris >= xmin && x_souris <= xmax)
 					{
 						
 						fprintf(log, "ID trou cliqué : %d \n", id);
+						fprintf(log, "************** \n");
 
 					}
 					
