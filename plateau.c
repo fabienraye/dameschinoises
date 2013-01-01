@@ -357,8 +357,6 @@ int identifier_pion(int x_souris, int y_souris)
 	int x;						// Coordonnée x du pion
 	int y;						// Coordonnée y du pion
 	
-	int test;
-	
 	int xmin;						// Borne x minimale pour être dans la surface
 	int xmax;						// Borne x maximale pour être dans la surface
 	int ymin;						// Borne y minimale pour être dans la surface
@@ -482,8 +480,6 @@ int identifier_pion(int x_souris, int y_souris)
 				fprintf(log, "ID trou possible : %d \n", id);
 				
 			}
-			
-			j++;
 			
 		}
 		
