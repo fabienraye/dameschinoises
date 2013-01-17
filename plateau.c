@@ -7,7 +7,7 @@
 
 #include "plateau.h"
 
-// Fonction initialisant la position des trous sur le pions (init_Trou)
+// Fonction initialisant la position des trous sur le plateau (init_Trou)
 void init_position_trous (SDL_Surface *ecran, Plateau *plateau) 
 {
 	
@@ -27,10 +27,10 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	
 	/* GESTION DES FICHIERS */
 	
-	FILE *log;
-	FILE *fichier_trous;
-	FILE *x_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
-	FILE *y_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
+	FILE *log;					// Fichier log
+	FILE *fichier_trous;				// Fichier contenant la position des trous sur le plateau
+	FILE *x_range_trous;				// Fichier contenant l'espace occupé en largeur par chaque trou
+	FILE *y_range_trous;				// Fichier contenant l'espace occupé en largeur par chaque trou
 	
 	log=fopen("log_init_position_trous.txt", "w");
 	x_range_trous=fopen("x_range_trous.txt", "w+");
@@ -68,7 +68,7 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 				plateau->tab[i]->position_pion.x = x;
 				plateau->tab[i]->position_pion.y = y;
 				
-				// Création des fichiers 
+				// Création des fichiers de taille des surfaces
 				fprintf(x_range_trous, "%d %d %d \n", id, x, x+largeur_image);
 				fprintf(y_range_trous, "%d %d %d \n", id, y, y+hauteur_image);
 				
@@ -113,7 +113,7 @@ void init_position_trous (SDL_Surface *ecran, Plateau *plateau)
 	
 }
 
-// Fonction initialisant la position des pions sur le pions (init_Position)
+// Fonction initialisant la position des pions sur le plateau (init_Position)
 void init_position_pions (SDL_Surface *ecran, Pions *pions) 
 {
 	
@@ -129,7 +129,7 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 	/* GESTION DES FICHIERS */
 	
 	FILE *fichier_pions;							// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
-	FILE *log;									// Fichier log
+	FILE *log;								// Fichier log
 	
 	log=fopen("log_position_pions.txt", "w");
 	fichier_pions=fopen("pions.txt", "r");
@@ -156,44 +156,35 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 			switch(couleur) 
 			{
 				
-				// Couleur 1 : ROUGE
+				// Couleur 1 : JAUNE
 				case 1 : 
 					
-					pions->tab[i]->surface=IMG_Load("Image/red.png");
+					pions->tab[i]->surface=IMG_Load("Image/yellow.png");
 					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
 					i++;
 				
 				break;
 				
-				// Couleur 2 : BLEU
+				// Couleur 2 : VIOLET
 				case 2 :
 					
-					pions->tab[i]->surface = IMG_Load("Image/blue.png");
+					pions->tab[i]->surface = IMG_Load("Image/purple.png");
 					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
 					i++;
 				
 				break;
 				
-				// Couleur 3 : JAUNE
+				// Couleur 3 : NOIR
 				case 3 :
 					
-					pions->tab[i]->surface= IMG_Load("Image/yellow.png");
+					pions->tab[i]->surface= IMG_Load("Image/black.png");
 					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
 					i++;
 				
 				break;
 				
-				// Couleur 4 : GRIS
+				// Couleur 4 : VERT
 				case 4 :
-					
-					pions->tab[i]->surface = IMG_Load("Image/grey.png");
-					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
-					i++;
-				
-				break;
-				
-				// Couleur 5 : VERT
-				case 5 :
 					
 					pions->tab[i]->surface = IMG_Load("Image/green.png");
 					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
@@ -201,10 +192,19 @@ void init_position_pions (SDL_Surface *ecran, Pions *pions)
 				
 				break;
 				
-				// Couleur 6 : VIOLET
+				// Couleur 5 : BLEU
+				case 5 :
+					
+					pions->tab[i]->surface = IMG_Load("Image/blue.png");
+					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
+					i++;
+				
+				break;
+				
+				// Couleur 6 : ROUGE
 				case 6 :
 					
-					pions->tab[i]->surface = IMG_Load("Image/purple.png");
+					pions->tab[i]->surface = IMG_Load("Image/red.png");
 					SDL_BlitSurface(pions->tab[i]->surface, NULL, ecran, &(pions->tab[i]->position_pion));
 					i++;
 				
@@ -278,112 +278,147 @@ void mouvement(int depart, int arrivee, Plateau *plateau)
 	
 }
 
-// Fonction d'affichage d'un mouvement de pion
-void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Pions *pions)
+// Fonction d'affichage du mouvement d'un pion
+void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Plateau *plateau)
 {
 	
 	int couleur;						// Couleur du pion à déplacer
 	
-	couleur = pions->tab[depart]->couleur;
+	FILE *log;
 	
-	switch(couleur) 
+	log=fopen("log_mouvement.txt", "w+");
+	
+	// couleur = plateau->tab[depart]->couleur;
+	
+	couleur = 1;
+	
+	switch(couleur)
 	{
 		
 		// Couleur 1 : ROUGE
 		case 1 : 
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/red.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/red.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 1 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
 		
 		break;
 		
 		// Couleur 2 : BLEU
 		case 2 :
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/blue.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/blue.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 2 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
 		
 		break;
 		
 		// Couleur 3 : JAUNE
 		case 3 :
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/yellow.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/yellow.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 3 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
 		
 		break;
 		
 		// Couleur 4 : GRIS
 		case 4 :
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/grey.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/grey.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 4 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 	
 		
 		break;
 		
 		// Couleur 5 : VERT
 		case 5 :
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/green.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/green.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 5 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
 		
 		break;
 		
 		// Couleur 6 : VIOLET
 		case 6 :
 			
-			pions->tab[depart]->surface = IMG_Load("Image/hole.png");
-			pions->tab[arrivee]->surface = IMG_Load("Image/purple.png");
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/purple.png");
 		
-			SDL_BlitSurface(pions->tab[depart]->surface, NULL, ecran, &(pions->tab[depart]->position_pion));
-			SDL_BlitSurface(pions->tab[arrivee]->surface, NULL, ecran, &(pions->tab[arrivee]->position_pion));
+			fprintf(log, "Passage case 6 \n");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
 		
 		break;
 		
 		default :
 			
+			fprintf(log, "Passage case default \n");
+		
 		break;
 		
 	}
 	
 }
 
-// Fonction permettant d'identifier un pion à partir des coordonnées d'un clic de souris
+// Fonction permettant d'identifier un pion ou un trou à partir des coordonnées d'un clic de souris
 int identifier_pion(int x_souris, int y_souris)
 {
+	
+	/* VARIABLES */
 	
 	int id;						// Identifiant du pion
 	int couleur;					// Couleur du pion
 	int x;						// Coordonnée x du pion
 	int y;						// Coordonnée y du pion
 	
-	int xmin;						// Borne x minimale pour être dans la surface
-	int xmax;						// Borne x maximale pour être dans la surface
-	int ymin;						// Borne y minimale pour être dans la surface
-	int ymax;						// Borne y maximale pour être dans la surface
+	int xmin;					// Borne x minimale pour être dans la surface
+	int xmax;					// Borne x maximale pour être dans la surface
+	int ymin;					// Borne y minimale pour être dans la surface
+	int ymax;					// Borne y maximale pour être dans la surface
 	
 	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
 	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
 	
-	int id_possible[121];			// Tableau contenant les identifiants des pions potentiellement cliqués aux coordonnées de la souris
+	int id_possible[121];				// Tableau contenant les identifiants des pions/trous potentiellement cliqués aux coordonnées de la souris
+	int id_pion_clique;				// Identifiant du pion qui a été cliqué
 	
 	int i;						// Compteur
 	int k;						// Compteur
+	
+	id_pion_clique=-1;
 	
 	i=0;
 	k=0;
@@ -392,20 +427,20 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	FILE *fichier_pions;				// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	
-	FILE *x_range_trous;			// Fichier contenant l'espace occupé en largeur par chaque trou
-	FILE *y_range_trous;			// Fichier contenant l'espace occupé en hauteur par chaque trou
-	FILE *x_range_pions;			// Fichier contenant l'espace occupé en largeur par chaque pion
-	FILE *y_range_pions;			// Fichier contenant l'espace occupé en hauteur par chaque pion
+	FILE *x_range_pions;				// Fichier contenant l'espace occupé en largeur par chaque pion
+	FILE *y_range_pions;				// Fichier contenant l'espace occupé en hauteur par chaque pion
 	
-	FILE *log;						// Fichier log
+	FILE *log;					// Fichier log
 	
 	SDL_Surface *image_pion; 
 	
-	log=fopen("log_identifier_pions.txt", "a");
+	log=fopen("log_identifier_pion.txt", "a");
 	
 	fichier_pions=fopen("pions.txt", "r");
 	x_range_pions=fopen("x_range_pions.txt", "w+");
 	y_range_pions=fopen("y_range_pions.txt", "w+");
+	
+	/* IDENTIFICATION DU PION */
 	
 	image_pion = IMG_Load("Image/hole.png");
 	
@@ -460,7 +495,9 @@ int identifier_pion(int x_souris, int y_souris)
 					if (x_souris >= xmin && x_souris <= xmax)
 					{
 						
-						fprintf(log, "ID pion cliqué : %d \n", id);
+						id_pion_clique=id;
+						fprintf(log, "ID pion cliqué : %d \n", id_pion_clique);
+						fprintf(log, "************** \n");
 
 					}
 					
@@ -472,14 +509,51 @@ int identifier_pion(int x_souris, int y_souris)
 		
 	}
 	
+	// Fermeture des fichiers
 	fclose(y_range_pions);
 	fclose(x_range_pions);
+	fclose(log);
+	
+	return id_pion_clique;
+	
+}
+
+int identifier_trou(int x_souris, int y_souris)
+{
+	
+	/* VARIABLES */
+	
+	int id;						// Identifiant du trou
+	
+	int xmin;					// Borne x minimale pour être dans la surface
+	int xmax;					// Borne x maximale pour être dans la surface
+	int ymin;					// Borne y minimale pour être dans la surface
+	int ymax;					// Borne y maximale pour être dans la surface
+	
+	int id_possible[121];				// Tableau contenant les identifiants des pions/trous potentiellement cliqués aux coordonnées de la souris
+	int id_trou_clique;				// Identifiant du trou qui a été cliqué
+	
+	int i;						// Compteur
+	int k;						// Compteur
+	
+	/* GESTION DES FICHIERS */
+	
+	FILE *x_range_trous;				// Fichier contenant l'espace occupé en largeur par chaque trou
+	FILE *y_range_trous;				// Fichier contenant l'espace occupé en hauteur par chaque trou
+	
+	FILE *log;					// Fichier log
+	
+	id_trou_clique=-1;
+	
+	i=0;
+	k=0;
+	
+	log=fopen("log_identifier_trou.txt", "a");
 	
 	x_range_trous=fopen("x_range_trous.txt", "r");
 	y_range_trous=fopen("y_range_trous.txt", "r");
 	
-	i=0;
-	k=0;
+	/* IDENTIFICATION DU TROU */
 	
 	if (x_range_trous != NULL && y_range_trous != NULL)
 	{
@@ -493,7 +567,7 @@ int identifier_pion(int x_souris, int y_souris)
 				id_possible[i]=id;
 				i++;
 				
-				fprintf(log, "ID trou possible en y : %d \n", id);
+				// fprintf(log, "ID trou possible en y : %d \n", id);
 				
 			}
 			
@@ -513,7 +587,9 @@ int identifier_pion(int x_souris, int y_souris)
 					if (x_souris >= xmin && x_souris <= xmax)
 					{
 						
-						fprintf(log, "ID trou cliqué : %d \n", id);
+						id_trou_clique=id;
+						
+						fprintf(log, "ID trou cliqué : %d \n", id_trou_clique);
 						fprintf(log, "************** \n");
 
 					}
@@ -529,9 +605,8 @@ int identifier_pion(int x_souris, int y_souris)
 	// Fermeture des fichiers
 	fclose(y_range_trous);
 	fclose(x_range_trous);
-	
 	fclose(log);
 	
-	return id;
+	return id_trou_clique;
 	
 }
