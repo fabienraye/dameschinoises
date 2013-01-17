@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	fprintf(log, "***** Affichage de l'icone de la fenêtre \n");
 	
 	// Affichage de l'icone de la fenêtre
-	icone = SDL_LoadBMP("icone.bmp");
+	icone = SDL_LoadBMP("icon.bmp");
 	SDL_WM_SetIcon(icone, NULL);
 	
 	// Paramétrage de la surface "écran
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	
 	// Affichage des trous du plateau
 	Plateau *plateau = (Plateau*) malloc(sizeof(Plateau));
-	init_position_trous (ecran, plateau);
+	init_position_trous(ecran, plateau);
 	
 	fprintf(log, "***** Affichage des pions sur le plateau (appel à la fonction init_position_pions) \n");
 	
@@ -84,14 +84,14 @@ int main(int argc, char *argv[])
 	
 	fprintf(log, "***** Mise à jour de l'affichage \n");
 	
-	mouvement(0, 59, ecran, pions);
-	mouvement(10, 58, ecran, pions);
-	
 	// Mise à jour de l'affichage
 	SDL_Flip(ecran); 
 
 	// Attente d'un évènement SDL
-	pause();
+	pause(ecran, plateau);
+	
+	// Mise à jour de l'affichage
+	SDL_Flip(ecran); 
 	
 	fprintf(log, "***** Fermeture de la librairie SDL \n");
 	
