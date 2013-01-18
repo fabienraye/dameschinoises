@@ -1,77 +1,104 @@
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "SDL/SDL.h"
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_image.h>
-#include "SDL/SDL.h"
 
 #include "plateau.h"
 #include "sdl_plus.h"
 
-// Largeur de la fenÃªtre, en pixels
 #define WINDOW_X 500
-// Hauteur de la fenÃªtre, en pixels
 #define WINDOW_Y 500
-// Nombre de couleurs utilisÃ©es par la librairie
 #define NB_COLOR 32
 
 int main(int argc, char *argv[])
 {
-  /** SURFACES **/
-	SDL_Surface *ecran = NULL; 
+	
+	FILE *log;
+	
+	log=fopen("log.txt", "w");
+	
+	fprintf(log, "***** Initialisation de la librairie SDL \n");
+	
+	/* INITIALISATION DE LA LIBRAIRIE SDL */
+	
+	// Création des surfaces
+	SDL_Surface *ecran = NULL;
 	SDL_Surface *icone=NULL;
 	
-	/** GESTION DE L'AFFICHAGE DE LA FENETRE **/
-	
-	// Initialisation de la librairie SDL
+	// Démarrage du module vidéo de la librairie SDL
 	SDL_Init(SDL_INIT_VIDEO);
-	// Remplissage de la surface "Ã©cran"
-	ecran = SDL_SetVideoMode(WINDOW_X, WINDOW_Y, NB_COLOR, SDL_HWSURFACE | SDL_DOUBLEBUF);
-	SDL_WM_SetCaption("Dames Chinoises -- SVMR", NULL);
-	// Icone de la barre de titre
+	
+	/* GESTION DE LA FENETRE */
+	
+	fprintf(log, "***** Affichage de l'icone de la fenêtre \n");
+	
+	// Affichage de l'icone de la fenêtre
 	icone = SDL_LoadBMP("icon.bmp");
 	SDL_WM_SetIcon(icone, NULL);
-	SDL_WM_SetCaption("Dames Chinoises -- SVMR", NULL);
 	
-	/** GESTION DES ERREURS SDL **/
+	// Paramétrage de la surface "écran
+	ecran = SDL_SetVideoMode(WINDOW_X, WINDOW_Y, NB_COLOR, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	
+	// Définition du titre de la fenêtre
+	SDL_WM_SetCaption("Dames Chinoises", NULL);
+	
+	fprintf(log, "***** Affichage du background \n");
+	
+	// Affichage fond de la fenêtre
+	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 0, 0, 0));
+	
+	/* GESTION DES ERREURS SDL */
+	
 	if(SDL_Init(SDL_INIT_VIDEO) == -1)
 	{
-	  
-		fprintf(stderr, "Erreur d'initalisation de la SDL : %s \n", SDL_GetError());
+		
+		fprintf(log, "Erreur d'initalisation de la SDL : %s \n", SDL_GetError());
 		exit(EXIT_FAILURE);
 		
 	}
 	
 	if(ecran == NULL) 
 	{
-	  
-		fprintf(stderr, "Impossible de charger le mode video :%s \n", SDL_GetError());
+		
+		fprintf(log, "Impossible de charger le mode video :%s \n", SDL_GetError());
 		exit(EXIT_FAILURE);
 		
 	}
-	  
-	 
-	/** GESTION DE L'AFFICHAGE DU PLATEAU **/
-		
-	// Fond de la fenÃªtre
-	SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 17, 6, 112));
 	
-	// Trous
-	Trou * trou = (Trou*)malloc(sizeof(Trou));
-	init_Trou(ecran, trou);
+	/* AFFICHAGE DU PLATEAU DE JEU */
 	
-	// Plateau
-	Plateau * plateau = (Plateau*)malloc(sizeof(Plateau));
+	fprintf(log, "***** Affichage des trous du plateau (appel à la fonction init_position_trous) \n");
 	
-	// Pions
-	init_Pion(plateau);
-	init_Position(ecran, plateau) ;
+	// Affichage des trous du plateau
+	Plateau *plateau = (Plateau*) malloc(sizeof(Plateau));
+	init_position_trous(ecran, plateau);
 	
-	// Mise Ã  jour de l'affichage
+	fprintf(log, "***** Affichage des pions sur le plateau (appel à la fonction init_position_pions) \n");
+	
+	// Affichage des pions sur le plateau
+	Pions *pions = (Pions*) malloc(sizeof(Pions));
+	allocation_memoire_position_pions(pions);
+	init_position_pions(ecran, pions);
+	
+	fprintf(log, "***** Mise à jour de l'affichage \n");
+	
+	// Mise à jour de l'affichage
 	SDL_Flip(ecran); 
 
-	pause();
+	// Attente d'un évènement SDL
+	pause(ecran, plateau);
 	
+	// Mise à jour de l'affichage
+	SDL_Flip(ecran); 
+	
+	fprintf(log, "***** Fermeture de la librairie SDL \n");
+	
+	// Fermeture de la librairie SDL
 	SDL_Quit();
+	
+	fclose(log);
     
 	return EXIT_SUCCESS;
 	
