@@ -270,153 +270,30 @@ void liberation_memoire_position_pions (Pions *pions)
 	
 }
 
-// Fonction permettant d'effectuer un mouvement
-void mouvement(int depart, int arrivee, Plateau *plateau)
-{
-	
-	
-	
-}
-
-// Fonction d'affichage du mouvement d'un pion
-void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Plateau *plateau)
-{
-	
-	int couleur;						// Couleur du pion à déplacer
-	
-	FILE *log;
-	
-	log=fopen("log_mouvement.txt", "w+");
-	
-	// couleur = plateau->tab[depart]->couleur;
-	
-	couleur = 1;
-	
-	switch(couleur)
-	{
-		
-		// Couleur 1 : ROUGE
-		case 1 : 
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/red.png");
-		
-			fprintf(log, "Passage case 1 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-			SDL_Flip(ecran); 
-		
-		break;
-		
-		// Couleur 2 : BLEU
-		case 2 :
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/blue.png");
-		
-			fprintf(log, "Passage case 2 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-			SDL_Flip(ecran); 
-		
-		break;
-		
-		// Couleur 3 : JAUNE
-		case 3 :
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/yellow.png");
-		
-			fprintf(log, "Passage case 3 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-		break;
-		
-		// Couleur 4 : GRIS
-		case 4 :
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/grey.png");
-		
-			fprintf(log, "Passage case 4 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-			SDL_Flip(ecran); 	
-		
-		break;
-		
-		// Couleur 5 : VERT
-		case 5 :
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/green.png");
-		
-			fprintf(log, "Passage case 5 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-			SDL_Flip(ecran); 
-		
-		break;
-		
-		// Couleur 6 : VIOLET
-		case 6 :
-			
-			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
-			plateau->tab[arrivee]->surface = IMG_Load("Image/purple.png");
-		
-			fprintf(log, "Passage case 6 \n");
-		
-			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
-			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
-		
-			SDL_Flip(ecran); 
-		
-		break;
-		
-		default :
-			
-			fprintf(log, "Passage case default \n");
-		
-		break;
-		
-	}
-	
-}
-
-// Fonction permettant d'identifier un pion ou un trou à partir des coordonnées d'un clic de souris
+// Fonction permettant d'identifier un pion à partir des coordonnées d'un clic de souris
 int identifier_pion(int x_souris, int y_souris)
 {
 	
 	/* VARIABLES */
 	
-	int id;						// Identifiant du pion
-	int couleur;					// Couleur du pion
-	int x;						// Coordonnée x du pion
-	int y;						// Coordonnée y du pion
+	int id;							// Identifiant du pion
+	int couleur;						// Couleur du pion
+	int x;							// Coordonnée x du pion
+	int y;							// Coordonnée y du pion
 	
-	int xmin;					// Borne x minimale pour être dans la surface
-	int xmax;					// Borne x maximale pour être dans la surface
-	int ymin;					// Borne y minimale pour être dans la surface
-	int ymax;					// Borne y maximale pour être dans la surface
+	int xmin;							// Borne x minimale pour être dans la surface
+	int xmax;							// Borne x maximale pour être dans la surface
+	int ymin;							// Borne y minimale pour être dans la surface
+	int ymax;							// Borne y maximale pour être dans la surface
 	
-	int largeur_image;				// Largeur de l'image utilisée pour chaque pion
-	int hauteur_image;				// Hauteur de l'image utilsée pour chaque pion
+	int largeur_image;					// Largeur de l'image utilisée pour chaque pion
+	int hauteur_image;					// Hauteur de l'image utilsée pour chaque pion
 	
 	int id_possible[121];				// Tableau contenant les identifiants des pions/trous potentiellement cliqués aux coordonnées de la souris
-	int id_pion_clique;				// Identifiant du pion qui a été cliqué
+	int id_pion_clique;					// Identifiant du pion qui a été cliqué
 	
-	int i;						// Compteur
-	int k;						// Compteur
+	int i;							// Compteur
+	int k;							// Compteur
 	
 	id_pion_clique=-1;
 	
@@ -425,12 +302,12 @@ int identifier_pion(int x_souris, int y_souris)
 	
 	/* GESTION DES FICHIERS */
 	
-	FILE *fichier_pions;				// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
+	FILE *fichier_pions;					// Fichier contenant l'identifiant, la couleur et la position (x,y) de chaque pion
 	
 	FILE *x_range_pions;				// Fichier contenant l'espace occupé en largeur par chaque pion
 	FILE *y_range_pions;				// Fichier contenant l'espace occupé en hauteur par chaque pion
 	
-	FILE *log;					// Fichier log
+	FILE *log;							// Fichier log
 	
 	SDL_Surface *image_pion; 
 	
@@ -518,6 +395,7 @@ int identifier_pion(int x_souris, int y_souris)
 	
 }
 
+// Fonction permettant d'identifier un trou à partir des coordonnées d'un clic de souris
 int identifier_trou(int x_souris, int y_souris)
 {
 	
@@ -608,5 +486,144 @@ int identifier_trou(int x_souris, int y_souris)
 	fclose(log);
 	
 	return id_trou_clique;
+	
+}
+
+// Fonction d'affichage du mouvement d'un pion sur le plateau
+void afficher_mouvement(int depart, int arrivee, SDL_Surface *ecran, Plateau *plateau)
+{
+	
+	int couleur;						// Couleur du pion à déplacer
+	
+	// couleur = plateau->tab[depart]->couleur;
+	
+	couleur = 3;
+	
+	switch(couleur)
+	{
+		
+		// Couleur 1 : ROUGE
+		case 1 : 
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/red.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
+		
+		break;
+		
+		// Couleur 2 : BLEU
+		case 2 :
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/blue.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
+		
+		break;
+		
+		// Couleur 3 : JAUNE
+		case 3 :
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/yellow.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+		break;
+		
+		// Couleur 4 : GRIS
+		case 4 :
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/grey.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 	
+		
+		break;
+		
+		// Couleur 5 : VERT
+		case 5 :
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/green.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
+		
+		break;
+		
+		// Couleur 6 : VIOLET
+		case 6 :
+			
+			plateau->tab[depart]->surface = IMG_Load("Image/hole.png");
+			plateau->tab[arrivee]->surface = IMG_Load("Image/purple.png");
+		
+			SDL_BlitSurface(plateau->tab[depart]->surface, NULL, ecran, &(plateau->tab[depart]->position_pion));
+			SDL_BlitSurface(plateau->tab[arrivee]->surface, NULL, ecran, &(plateau->tab[arrivee]->position_pion));
+		
+			SDL_Flip(ecran); 
+		
+		break;
+		
+		default :
+		
+		break;
+		
+	}
+	
+}
+
+// Fonction permettant de déplacer un pion sur le plateau
+void mouvement(int id_pion, int depart, int arrivee, Plateau *plateau)
+{
+	
+	// Penser à mettre à jour la position du pion dans pions.txt après un mouvement
+	
+	int id_courant;
+	
+	int x_pion_courant;
+	int y_pion_courant;
+	
+	int x_pion_arrivee;
+	int y_pion_arrivee;
+	
+	FILE *pions;
+	
+	pions=fopen("pions.txt", "w+");
+	
+	x_pion_arrivee = plateau->tab[arrivee]->position_pion.x;
+	y_pion_arrivee = plateau->tab[arrivee]->position_pion.y;
+	
+	if (pions != NULL)
+	{
+		
+		while(fscanf(pions,"%d %d %d", &id_courant, &x_pion_courant, &y_pion_courant) != EOF) 
+		{
+			
+			// Recherche de la ligne correspondante
+			if (id_courant== id_pion)
+			{
+				
+				// Remplacement de la ligne
+				fprintf(pions, "%d %d %d \n", id_courant, x_pion_arrivee, y_pion_arrivee);
+				
+			}
+			
+		}
+		
+	}
 	
 }
